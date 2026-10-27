@@ -159,9 +159,6 @@
 <nav class="dots" id="dots"></nav>
 
 <div class="controls">
-  <button id="prev" title="הקודם"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
-  <button id="play" title="נגן"><svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5l11 7-11 7z"/></svg></button>
-  <button id="next" title="הבא"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
   <button id="music" title="מוזיקה" hidden><svg viewBox="0 0 24 24" id="musicIcon"></svg></button>
 </div>
 <audio id="bgm" src="music.mp3" loop preload="none"></audio>
@@ -349,44 +346,34 @@ function goTo(c){ stopPlay(); c=Math.max(0,Math.min(CHAPTERS.length-1,c));
   // land on the end of the chapter's intro (caption visible), so the clip plays on the way
   scrollToY(frameToY(starts[c]+CHAPTERS[c].frames-12));
 }
-document.getElementById("next").onclick=()=>{ const c=curChapter(); const endG=starts[c]+CHAPTERS[c].frames-12; goTo(Math.round(target)>=endG-1?c+1:c); };
-document.getElementById("prev").onclick=()=>{ const c=curChapter(); stopPlay(); scrollToY(frameToY(c>0?starts[c-1]+CHAPTERS[c-1].frames-12:0)); };
+function nextChapter(){ const c=curChapter(); const endG=starts[c]+CHAPTERS[c].frames-12; goTo(Math.round(target)>=endG-1?c+1:c); }
+function prevChapter(){ const c=curChapter(); stopPlay(); scrollToY(frameToY(c>0?starts[c-1]+CHAPTERS[c-1].frames-12:0)); }
 
-/* autoplay: plays the sequence at real speed (24fps) */
-let playing=false, lastT=0;
-const playIcon=document.getElementById("playIcon");
-function setIcon(){ playIcon.innerHTML = playing ? '<path d="M8 5v14M16 5v14"/>' : '<path d="M8 5l11 7-11 7z"/>'; }
-let playUntil=null;               // scroll position where a next-section playback stops; null = play to the end
-function stopPlay(){ playing=false; playUntil=null; setIcon(); }
+/* next-section button: plays the following clip at real speed (24fps) and stops where its caption shows */
+let playing=false, lastT=0, playUntil=0;
+function stopPlay(){ playing=false; }
 function playStep(t){
   if(!playing) return;
   const dt=(t-lastT)/1000; lastT=t;
-  const stopY=playUntil ?? maxScroll();
-  const y=Math.min(stopY, scrollY + dt*24*(maxScroll()/(TOTAL-1)));
+  const y=Math.min(playUntil, scrollY + dt*24*(maxScroll()/(TOTAL-1)));
   scrollTo(0,y);
-  if(y>=stopY-1){ stopPlay(); return; }
+  if(y>=playUntil-1){ stopPlay(); return; }
   requestAnimationFrame(playStep);
 }
-document.getElementById("play").onclick=()=>{
-  cancelAnimationFrame(anim);
-  playing=!playing; playUntil=null; setIcon();
-  if(playing){ if(scrollY>=maxScroll()-1) scrollTo(0,0); lastT=performance.now(); requestAnimationFrame(playStep); }
-};
-/* next-section button: plays the following clip at real speed and stops where its caption shows */
 const nextSec=document.getElementById("nextSec");
 nextSec.onclick=()=>{
   const c=curChapter(); if(c>=CHAPTERS.length-1) return;
   cancelAnimationFrame(anim);
   playUntil=frameToY(starts[c+1]+CHAPTERS[c+1].frames-12);
-  playing=true; setIcon(); lastT=performance.now(); requestAnimationFrame(playStep);
+  playing=true; lastT=performance.now(); requestAnimationFrame(playStep);
 };
 addEventListener("wheel",()=>{ if(playing) stopPlay(); cancelAnimationFrame(anim); },{passive:true});
 addEventListener("touchstart",()=>{ if(playing) stopPlay(); cancelAnimationFrame(anim); },{passive:true});
 addEventListener("keydown",e=>{
   if(detailsEl.classList.contains("open")){ if(e.key==="Escape") closeDetails(); return; }
-  if(e.key==="ArrowDown"||e.key==="PageDown"||e.key==="ArrowLeft"){e.preventDefault();document.getElementById("next").click();}
-  if(e.key==="ArrowUp"||e.key==="PageUp"||e.key==="ArrowRight"){e.preventDefault();document.getElementById("prev").click();}
-  if(e.key===" "){e.preventDefault();document.getElementById("play").click();}
+  if(e.key==="ArrowDown"||e.key==="PageDown"||e.key==="ArrowLeft"){e.preventDefault();nextChapter();}
+  if(e.key==="ArrowUp"||e.key==="PageUp"||e.key==="ArrowRight"){e.preventDefault();prevChapter();}
+  if(e.key===" "){e.preventDefault();nextSec.click();}
 });
 /* background music: plays music.mp3 from this folder as soon as the site opens; the button stops/resumes it
    and stays hidden when there is no such file. Browsers may block sound until the visitor's first click, tap
