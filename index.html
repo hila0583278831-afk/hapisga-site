@@ -93,11 +93,9 @@
 
   /* loader */
   #loader{position:fixed;inset:0;z-index:10;background:var(--ink);display:grid;place-items:center;transition:opacity .8s}
-  #loader .in{text-align:center}
-  #loader img{width:220px;opacity:.95}
-  #loader .bar{width:220px;height:1px;background:rgba(255,255,255,.12);margin:28px auto 12px}
-  #loader .bar b{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
-  #loader small{color:var(--muted);font-size:12px;letter-spacing:.2em}
+  #loader .count{font-family:"FbElitism",serif;font-size:clamp(120px,22vw,320px);line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}
+  #loader .count.pop{animation:pop .22s ease-out}
+  @keyframes pop{from{opacity:.25;transform:scale(.86)}to{opacity:1;transform:none}}
   #loader.done{opacity:0;pointer-events:none}
 
   @media (max-width:760px){
@@ -130,11 +128,7 @@
   </defs>
 </svg>
 
-<div id="loader"><div class="in">
-  <div class="brand" style="justify-content:center"><svg viewBox="0 0 60 122" style="height:90px"><use href="#tower"/></svg><img src="logo.png" alt="הפסגה"></div>
-  <div class="bar"><b id="lbar"></b></div>
-  <small id="ltext">טוען 0%</small>
-</div></div>
+<div id="loader"><div class="count" id="lcount" dir="ltr">1</div></div>
 
 <div id="stage"><canvas id="c"></canvas></div>
 <div class="shade"></div>
@@ -278,7 +272,19 @@ function cover(img,alpha){
 
 /* ---------- loading: each chapter is one file in seq/ (works from localhost and when opened directly) ---------- */
 let done=0;
-const lbar=document.getElementById("lbar"), ltext=document.getElementById("ltext"), loader=document.getElementById("loader");
+const lcount=document.getElementById("lcount"), loader=document.getElementById("loader");
+/* loader counts 1→10 quickly; it holds below 10 until the opening clip is loaded */
+const COUNT_MS = 110;             // time per number
+const counted=new Promise(res=>{
+  const t0=performance.now(); let shown=1;
+  (function tick(){
+    const byTime=1+Math.floor((performance.now()-t0)/COUNT_MS);
+    const byLoad=1+Math.floor(done/CHAPTERS[0].frames*9);
+    const n=Math.min(10,byTime,byLoad);
+    if(n!==shown){ shown=n; lcount.textContent=n; lcount.classList.remove("pop"); void lcount.offsetWidth; lcount.classList.add("pop"); }
+    if(n>=10) setTimeout(res,260); else setTimeout(tick,30);
+  })();
+});
 function loadScript(src){ return new Promise(res=>{ const s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=res; document.head.appendChild(s); }); }
 function decodeChapter(c){
   const list=(window.SEQ||{})[c+1]||[];
@@ -290,13 +296,10 @@ function decodeChapter(c){
 }
 async function loadChapter(c){ await loadScript(`seq/${c+1}.js`); await decodeChapter(c); if(window.SEQ) delete window.SEQ[c+1]; }
 (async()=>{
-  const first=CHAPTERS[0].frames;
-  ltext.textContent="טוען";
   await new Promise(res=>{ intro.onload=intro.onerror=res; intro.src="intro.jpg"; });
   for(let g=0;g<INTRO;g++){ frames[g]=intro; loaded[g]=intro.naturalWidth?1:0; }
-  const tick=setInterval(()=>{const p=Math.min(100,Math.round(done/first*100)); lbar.style.width=p+"%"; if(done) ltext.textContent=`טוען ${p}%`;},100);
   await loadChapter(0);
-  clearInterval(tick); lbar.style.width="100%";
+  await counted;
   resize(); loader.classList.add("done");
   for(let c=1;c<CHAPTERS.length;c++) await loadChapter(c);
 })();
@@ -370,22 +373,28 @@ addEventListener("keydown",e=>{
   if(e.key==="ArrowUp"||e.key==="PageUp"||e.key==="ArrowRight"){e.preventDefault();document.getElementById("prev").click();}
   if(e.key===" "){e.preventDefault();document.getElementById("play").click();}
 });
-/* background music: plays music.mp3 from this folder; the button stays hidden when there is no such file */
+/* background music: plays music.mp3 from this folder as soon as the site opens; the button stops/resumes it
+   and stays hidden when there is no such file. Browsers may block sound until the visitor's first click, tap
+   or key press, so if autoplay is refused the music starts on that first interaction instead. */
 const bgm=document.getElementById("bgm"), musicBtn=document.getElementById("music"), musicIcon=document.getElementById("musicIcon");
 const SPEAKER='<path d="M4 9h4l5-4v14l-5-4H4z"/>';
 let musicOn=false, fadeT;
 function setMusicIcon(){ musicIcon.innerHTML = SPEAKER + (musicOn ? '<path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/>' : '<path d="M17 9.5l5 5M22 9.5l-5 5"/>'); musicBtn.classList.toggle("on",musicOn); }
 function setMusic(on){
   musicOn=on; setMusicIcon(); clearInterval(fadeT);
-  if(on){ bgm.volume=0; bgm.play().catch(()=>{ musicOn=false; setMusicIcon(); }); }
+  if(on){ bgm.volume=0; bgm.play().catch(()=>{ musicOn=false; setMusicIcon(); armGesture(); }); }
   fadeT=setInterval(()=>{
     bgm.volume=Math.max(0,Math.min(.6,bgm.volume+(on?.04:-.06)));
     if(on ? bgm.volume>=.6 : bgm.volume<=0){ clearInterval(fadeT); if(!on) bgm.pause(); }
   },60);
 }
-musicBtn.onclick=()=>setMusic(!musicOn);
+const GESTURES=["pointerdown","keydown","touchend"];
+function startOnGesture(e){ if(musicBtn.contains(e.target)) return; disarmGesture(); setMusic(true); }
+function armGesture(){ GESTURES.forEach(t=>addEventListener(t,startOnGesture,true)); }
+function disarmGesture(){ GESTURES.forEach(t=>removeEventListener(t,startOnGesture,true)); }
+musicBtn.onclick=()=>{ disarmGesture(); setMusic(!musicOn); };
 setMusicIcon();
-fetch("music.mp3",{method:"HEAD"}).then(r=>{ if(r.ok) musicBtn.hidden=false; }).catch(()=>{});
+fetch("music.mp3",{method:"HEAD"}).then(r=>{ if(r.ok){ musicBtn.hidden=false; setMusic(true); } }).catch(()=>{});
 
 document.getElementById("ctaTop").onclick=e=>{e.preventDefault(); goTo(CHAPTERS.length-1);};
 onScroll();
