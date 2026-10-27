@@ -32,7 +32,7 @@
   header .cta:hover{background:var(--gold);border-color:var(--gold);color:#111}
 
   /* captions */
-  .captions{position:fixed;z-index:3;inset-inline-start:7vw;bottom:15vh;max-width:560px;pointer-events:none}
+  .captions{position:fixed;z-index:3;inset-inline-start:7vw;bottom:max(15vh,140px);max-width:560px;pointer-events:none}
   .cap{position:absolute;bottom:0;inset-inline-start:0;width:min(560px,86vw);opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
   .cap.on{opacity:1;transform:none}
   .cap .num{font-size:13px;letter-spacing:.3em;color:var(--gold-soft);margin-bottom:14px;display:flex;align-items:center;gap:12px}
@@ -87,8 +87,13 @@
   .progress{position:fixed;z-index:4;bottom:0;inset-inline:0;height:2px;background:rgba(255,255,255,.08)}
   .progress b{display:block;height:100%;width:0;background:var(--gold);transform-origin:right}
 
-  .hint{position:fixed;z-index:3;bottom:34px;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:.25em;color:var(--muted);transition:opacity .5s}
-  .hint::after{content:"";display:block;width:1px;height:34px;margin:10px auto 0;background:linear-gradient(var(--gold),transparent);animation:drip 1.8s infinite}
+  /* next-section button: plays the next clip for visitors who'd rather not scroll */
+  .nextsec{all:unset;position:fixed;z-index:4;bottom:30px;left:50%;transform:translate(-50%,10px);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:inherit;font-size:13px;letter-spacing:.2em;color:var(--text);opacity:0;pointer-events:none;transition:opacity .5s,transform .5s}
+  .nextsec.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+  .nextsec b{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;border:1px solid var(--gold);background:rgba(10,12,15,.35);backdrop-filter:blur(6px);transition:.25s;animation:nudge 2s ease-in-out infinite}
+  .nextsec:hover b{background:var(--gold);color:#111}
+  .nextsec svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  @keyframes nudge{0%,100%{transform:none}50%{transform:translateY(5px)}}
   @keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
   /* loader */
@@ -101,10 +106,10 @@
   @media (max-width:760px){
     header{padding:16px 18px} header img{height:28px} header .brand svg{height:38px} header .cta{padding:8px 14px;font-size:12px}
     #details dl{grid-template-columns:1fr;gap:4px} #details dd{margin-bottom:10px}
-    .captions{inset-inline-start:18px;bottom:120px}
+    .captions{inset-inline-start:18px;bottom:180px}
     nav.dots{inset-inline-end:14px} nav.dots span{display:none}
     .controls{bottom:22px;inset-inline-end:18px} .controls button{width:42px;height:42px}
-    .hint{display:none}
+    .nextsec{bottom:84px}
   }
 </style>
 </head>
@@ -161,7 +166,7 @@
 </div>
 <audio id="bgm" src="music.mp3" loop preload="none"></audio>
 
-<div class="hint" id="hint">גללו לגילוי</div>
+<button class="nextsec" id="nextSec">לחלק הבא<b><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></b></button>
 <div class="progress"><b id="pbar"></b></div>
 
 <div id="track"></div>
@@ -310,7 +315,6 @@ function onScroll(){
   const m=maxScroll(), p=m>0?Math.max(0,Math.min(1,scrollY/m)):0;
   target=p*(TOTAL-1);
   document.getElementById("pbar").style.width=(p*100)+"%";
-  document.getElementById("hint").style.opacity=scrollY>40?0:1;
 }
 addEventListener("scroll",onScroll,{passive:true});
 
@@ -325,6 +329,7 @@ function loop(){
              : i>6 && i<CHAPTERS[c].frames-10 ? c : (c===CHAPTERS.length-1 && i>6 ? c : -1);
   if(show!==activeCap){ caps.forEach((el,k)=>el.classList.toggle("on",k===show)); activeCap=show; }
   dots.forEach((d,k)=>d.classList.toggle("on",k===c));
+  nextSec.classList.toggle("on", !playing && c<CHAPTERS.length-1);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
@@ -351,19 +356,29 @@ document.getElementById("prev").onclick=()=>{ const c=curChapter(); stopPlay(); 
 let playing=false, lastT=0;
 const playIcon=document.getElementById("playIcon");
 function setIcon(){ playIcon.innerHTML = playing ? '<path d="M8 5v14M16 5v14"/>' : '<path d="M8 5l11 7-11 7z"/>'; }
-function stopPlay(){ playing=false; setIcon(); }
+let playUntil=null;               // scroll position where a next-section playback stops; null = play to the end
+function stopPlay(){ playing=false; playUntil=null; setIcon(); }
 function playStep(t){
   if(!playing) return;
   const dt=(t-lastT)/1000; lastT=t;
-  const y=Math.min(maxScroll(), scrollY + dt*24*(maxScroll()/(TOTAL-1)));
+  const stopY=playUntil ?? maxScroll();
+  const y=Math.min(stopY, scrollY + dt*24*(maxScroll()/(TOTAL-1)));
   scrollTo(0,y);
-  if(y>=maxScroll()-1){ stopPlay(); return; }
+  if(y>=stopY-1){ stopPlay(); return; }
   requestAnimationFrame(playStep);
 }
 document.getElementById("play").onclick=()=>{
   cancelAnimationFrame(anim);
-  playing=!playing; setIcon();
+  playing=!playing; playUntil=null; setIcon();
   if(playing){ if(scrollY>=maxScroll()-1) scrollTo(0,0); lastT=performance.now(); requestAnimationFrame(playStep); }
+};
+/* next-section button: plays the following clip at real speed and stops where its caption shows */
+const nextSec=document.getElementById("nextSec");
+nextSec.onclick=()=>{
+  const c=curChapter(); if(c>=CHAPTERS.length-1) return;
+  cancelAnimationFrame(anim);
+  playUntil=frameToY(starts[c+1]+CHAPTERS[c+1].frames-12);
+  playing=true; setIcon(); lastT=performance.now(); requestAnimationFrame(playStep);
 };
 addEventListener("wheel",()=>{ if(playing) stopPlay(); cancelAnimationFrame(anim); },{passive:true});
 addEventListener("touchstart",()=>{ if(playing) stopPlay(); cancelAnimationFrame(anim); },{passive:true});
