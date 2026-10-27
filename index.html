@@ -32,7 +32,7 @@
   header .cta:hover{background:var(--gold);border-color:var(--gold);color:#111}
 
   /* captions */
-  .captions{position:fixed;z-index:3;inset-inline-start:7vw;bottom:max(15vh,140px);max-width:560px;pointer-events:none}
+  .captions{position:fixed;z-index:3;inset-inline-start:7vw;bottom:15vh;max-width:560px;pointer-events:none}
   .cap{position:absolute;bottom:0;inset-inline-start:0;width:min(560px,86vw);opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
   .cap.on{opacity:1;transform:none}
   .cap .num{font-size:13px;letter-spacing:.3em;color:var(--gold-soft);margin-bottom:14px;display:flex;align-items:center;gap:12px}
@@ -88,8 +88,8 @@
   .progress b{display:block;height:100%;width:0;background:var(--gold);transform-origin:right}
 
   /* next-section button: plays the next clip for visitors who'd rather not scroll */
-  .nextsec{all:unset;position:fixed;z-index:4;bottom:30px;left:50%;transform:translate(-50%,10px);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:inherit;font-size:13px;letter-spacing:.2em;color:var(--text);opacity:0;pointer-events:none;transition:opacity .5s,transform .5s}
-  .nextsec.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+  .nextsec{all:unset;position:fixed;z-index:4;inset-inline-start:7vw;bottom:max(24px,calc(15vh - 74px));transform:translateY(10px);cursor:pointer;color:var(--text);opacity:0;pointer-events:none;transition:opacity .5s,transform .5s}
+  .nextsec.on{opacity:1;transform:none;pointer-events:auto}
   .nextsec b{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;border:1px solid var(--gold);background:rgba(10,12,15,.35);backdrop-filter:blur(6px);transition:.25s;animation:nudge 2s ease-in-out infinite}
   .nextsec:hover b{background:var(--gold);color:#111}
   .nextsec svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -106,10 +106,10 @@
   @media (max-width:760px){
     header{padding:16px 18px} header img{height:28px} header .brand svg{height:38px} header .cta{padding:8px 14px;font-size:12px}
     #details dl{grid-template-columns:1fr;gap:4px} #details dd{margin-bottom:10px}
-    .captions{inset-inline-start:18px;bottom:180px}
+    .captions{inset-inline-start:18px;bottom:120px}
     nav.dots{inset-inline-end:14px} nav.dots span{display:none}
     .controls{bottom:22px;inset-inline-end:18px} .controls button{width:42px;height:42px}
-    .nextsec{bottom:84px}
+    .nextsec{inset-inline-start:18px;bottom:46px}
   }
 </style>
 </head>
@@ -166,7 +166,7 @@
 </div>
 <audio id="bgm" src="music.mp3" loop preload="none"></audio>
 
-<button class="nextsec" id="nextSec">לחלק הבא<b><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></b></button>
+<button class="nextsec" id="nextSec" title="לחלק הבא" aria-label="לחלק הבא"><b><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></b></button>
 <div class="progress"><b id="pbar"></b></div>
 
 <div id="track"></div>
