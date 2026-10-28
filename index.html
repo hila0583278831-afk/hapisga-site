@@ -195,7 +195,8 @@ const PROJECT = {
     ["מועד אכלוס",   "יעודכן בקרוב"]
   ],
   phone: "050-0000000",            // placeholder
-  whatsapp: "972500000000"         // placeholder, international format without +
+  whatsapp: "972500000000",        // placeholder, international format without +
+  meeting: "pisga.marom@gmail.com"                    // "לתיאום פגישה" target: a booking page (https://calendly.com/...) or an email address; empty = scroll to the last section
 };
 
 /* ---------- index ---------- */
@@ -400,7 +401,12 @@ addEventListener("pagehide",()=>{ clearInterval(fadeT); bgm.pause(); });
 setMusicIcon();
 fetch("music.mp3",{method:"HEAD"}).then(r=>{ if(r.ok) musicBtn.hidden=false; }).catch(()=>{});
 
-document.getElementById("ctaTop").onclick=e=>{e.preventDefault(); goTo(CHAPTERS.length-1);};
+const ctaTop=document.getElementById("ctaTop");
+if(PROJECT.meeting.includes("@")){
+  ctaTop.href=`mailto:${PROJECT.meeting}?subject=${encodeURIComponent("תיאום פגישה - הפסגה")}&body=${encodeURIComponent("שלום,\nאשמח לתאם פגישה לגבי פרויקט הפסגה.\n\nשם:\nטלפון:\nמועד נוח:\n")}`;
+} else if(PROJECT.meeting){
+  ctaTop.href=PROJECT.meeting; ctaTop.target="_blank"; ctaTop.rel="noopener";
+} else ctaTop.onclick=e=>{e.preventDefault(); goTo(CHAPTERS.length-1);};
 onScroll();
 </script>
 </body>
