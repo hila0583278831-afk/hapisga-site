@@ -375,28 +375,30 @@ addEventListener("keydown",e=>{
   if(e.key==="ArrowUp"||e.key==="PageUp"||e.key==="ArrowRight"){e.preventDefault();prevChapter();}
   if(e.key===" "){e.preventDefault();nextSec.click();}
 });
-/* background music: plays music.mp3 from this folder as soon as the site opens; the button stops/resumes it
-   and stays hidden when there is no such file. Browsers may block sound until the visitor's first click, tap
-   or key press, so if autoplay is refused the music starts on that first interaction instead. */
+/* background music: music.mp3 from this folder, played only when the visitor presses the speaker button and
+   stopped by pressing it again. It also pauses while the tab is hidden or closed. The button stays hidden when
+   there is no such file. */
 const bgm=document.getElementById("bgm"), musicBtn=document.getElementById("music"), musicIcon=document.getElementById("musicIcon");
 const SPEAKER='<path d="M4 9h4l5-4v14l-5-4H4z"/>';
+const MUSIC_VOL=.6, FADE_STEPS=8;
 let musicOn=false, fadeT;
 function setMusicIcon(){ musicIcon.innerHTML = SPEAKER + (musicOn ? '<path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/>' : '<path d="M17 9.5l5 5M22 9.5l-5 5"/>'); musicBtn.classList.toggle("on",musicOn); }
-function setMusic(on){
-  musicOn=on; setMusicIcon(); clearInterval(fadeT);
-  if(on){ bgm.volume=0; bgm.play().catch(()=>{ musicOn=false; setMusicIcon(); armGesture(); }); }
+// counts fade steps instead of reading bgm.volume back, so the pause always happens (iOS ignores volume)
+function fadeTo(on){
+  clearInterval(fadeT); let k=0;
+  if(on){ bgm.volume=0; bgm.play().catch(()=>{ musicOn=false; setMusicIcon(); }); }
   fadeT=setInterval(()=>{
-    bgm.volume=Math.max(0,Math.min(.6,bgm.volume+(on?.04:-.06)));
-    if(on ? bgm.volume>=.6 : bgm.volume<=0){ clearInterval(fadeT); if(!on) bgm.pause(); }
-  },60);
+    k++; const v=MUSIC_VOL*(on ? k/FADE_STEPS : 1-k/FADE_STEPS);
+    try{ bgm.volume=Math.max(0,Math.min(MUSIC_VOL,v)); }catch(e){}
+    if(k>=FADE_STEPS){ clearInterval(fadeT); if(!on) bgm.pause(); }
+  },50);
 }
-const GESTURES=["pointerdown","keydown","touchend"];
-function startOnGesture(e){ if(musicBtn.contains(e.target)) return; disarmGesture(); setMusic(true); }
-function armGesture(){ GESTURES.forEach(t=>addEventListener(t,startOnGesture,true)); }
-function disarmGesture(){ GESTURES.forEach(t=>removeEventListener(t,startOnGesture,true)); }
-musicBtn.onclick=()=>{ disarmGesture(); setMusic(!musicOn); };
+function setMusic(on){ musicOn=on; setMusicIcon(); fadeTo(on); }
+musicBtn.onclick=()=>setMusic(!musicOn);
+document.addEventListener("visibilitychange",()=>{ if(!musicOn) return; if(document.hidden){ clearInterval(fadeT); bgm.pause(); } else fadeTo(true); });
+addEventListener("pagehide",()=>{ clearInterval(fadeT); bgm.pause(); });
 setMusicIcon();
-fetch("music.mp3",{method:"HEAD"}).then(r=>{ if(r.ok){ musicBtn.hidden=false; setMusic(true); } }).catch(()=>{});
+fetch("music.mp3",{method:"HEAD"}).then(r=>{ if(r.ok) musicBtn.hidden=false; }).catch(()=>{});
 
 document.getElementById("ctaTop").onclick=e=>{e.preventDefault(); goTo(CHAPTERS.length-1);};
 onScroll();

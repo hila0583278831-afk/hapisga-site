@@ -1,4 +1,4 @@
-param([int]$Port = 8080)
+param([int]$Port = 8080, [switch]$NoBrowser)
 $root = [IO.Path]::GetFullPath((Split-Path -Parent $MyInvocation.MyCommand.Path))
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$Port/")
@@ -7,7 +7,7 @@ Write-Host ""
 Write-Host "  Site is running:  http://localhost:$Port/"
 Write-Host "  Close this window to stop the server."
 Write-Host ""
-Start-Process "http://localhost:$Port/"
+if (-not $NoBrowser) { Start-Process "http://localhost:$Port/" }
 $mime = @{ '.html'='text/html; charset=utf-8'; '.js'='application/javascript'; '.css'='text/css';
            '.webp'='image/webp'; '.png'='image/png'; '.jpg'='image/jpeg'; '.json'='application/json'; '.svg'='image/svg+xml'; '.mp3'='audio/mpeg'; '.m4a'='audio/mp4' }
 while ($listener.IsListening) {
