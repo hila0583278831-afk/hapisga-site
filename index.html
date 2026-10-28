@@ -49,23 +49,39 @@
   .hero h1{font-family:"FbElitism",serif;font-weight:400;font-size:clamp(96px,19vw,300px);line-height:1;letter-spacing:.02em;color:var(--text);text-shadow:0 6px 40px rgba(0,0,0,.45)}
 
   /* project details */
-  #details{position:fixed;inset:0;z-index:8;display:grid;place-items:center;padding:16px;background:rgba(5,6,8,.72);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .4s}
-  #details.open{opacity:1;pointer-events:auto}
-  #details .sheet{position:relative;width:min(640px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#111418;border:1px solid rgba(217,191,148,.3);border-radius:18px;padding:40px clamp(22px,4vw,44px)}
-  #details .brand{justify-content:center;margin-bottom:22px}
-  #details .brand img{height:40px}
-  #details h3{font-weight:400;font-size:clamp(24px,2.6vw,32px);text-align:center;margin-bottom:8px}
-  #details .lead{text-align:center;color:var(--muted);line-height:1.6;margin-bottom:28px}
-  #details dl{display:grid;grid-template-columns:auto 1fr;gap:14px 24px;border-block:1px solid rgba(217,191,148,.2);padding:24px 0;margin-bottom:28px}
-  #details dt{color:var(--gold-soft);font-size:14px;letter-spacing:.06em;white-space:nowrap}
-  #details dd{color:var(--text);line-height:1.5}
-  #details .actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-  #details .actions a{text-decoration:none;color:var(--text);border:1px solid rgba(217,191,148,.55);padding:13px 28px;border-radius:999px;transition:.3s}
-  #details .actions a.primary{background:var(--gold);border-color:var(--gold);color:#111}
-  #details .actions a:hover{background:var(--gold-soft);border-color:var(--gold-soft);color:#111}
-  #details .close{all:unset;cursor:pointer;position:absolute;top:16px;inset-inline-end:16px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--muted);transition:.25s}
-  #details .close:hover{color:var(--text);background:rgba(255,255,255,.08)}
-  #details .close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+  .modal{position:fixed;inset:0;z-index:8;display:grid;place-items:center;padding:16px;background:rgba(5,6,8,.72);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .4s}
+  .modal.open{opacity:1;pointer-events:auto}
+  .modal .sheet{position:relative;width:min(640px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#111418;border:1px solid rgba(217,191,148,.3);border-radius:18px;padding:40px clamp(22px,4vw,44px)}
+  .modal .brand{justify-content:center;margin-bottom:22px}
+  .modal .brand img{height:40px}
+  .modal h3{font-weight:400;font-size:clamp(24px,2.6vw,32px);text-align:center;margin-bottom:8px}
+  .modal .lead{text-align:center;color:var(--muted);line-height:1.6;margin-bottom:28px}
+  .modal dl{display:grid;grid-template-columns:auto 1fr;gap:14px 24px;border-block:1px solid rgba(217,191,148,.2);padding:24px 0;margin-bottom:28px}
+  .modal dt{color:var(--gold-soft);font-size:14px;letter-spacing:.06em;white-space:nowrap}
+  .modal dd{color:var(--text);line-height:1.5}
+  .modal .actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .modal .actions a{text-decoration:none;color:var(--text);border:1px solid rgba(217,191,148,.55);padding:13px 28px;border-radius:999px;transition:.3s}
+  .modal .actions a.primary{background:var(--gold);border-color:var(--gold);color:#111}
+  .modal .actions a:hover{background:var(--gold-soft);border-color:var(--gold-soft);color:#111}
+  .modal .close{all:unset;cursor:pointer;position:absolute;top:16px;inset-inline-end:16px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--muted);transition:.25s}
+  .modal .close:hover{color:var(--text);background:rgba(255,255,255,.08)}
+  .modal .close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+
+  /* contact form */
+  .modal form{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .modal label{display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--gold-soft);letter-spacing:.04em}
+  .modal label.full,.modal .send,.modal .status{grid-column:1/-1}
+  .modal input,.modal textarea{font:inherit;font-size:16px;letter-spacing:normal;color:var(--text);background:rgba(255,255,255,.04);border:1px solid rgba(217,191,148,.3);border-radius:10px;padding:12px 14px;outline:none;transition:border-color .2s}
+  .modal input:focus,.modal textarea:focus{border-color:var(--gold)}
+  .modal textarea{resize:vertical;min-height:84px}
+  .modal .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+  .modal .send{all:unset;cursor:pointer;justify-self:center;margin-top:6px;background:var(--gold);color:#111;font-family:inherit;font-size:17px;padding:14px 44px;border-radius:999px;transition:.3s}
+  .modal .send:hover{background:var(--gold-soft)}
+  .modal .send:disabled{opacity:.6;cursor:wait}
+  .modal .status{text-align:center;color:var(--muted);min-height:1.4em;line-height:1.6}
+  .modal .status a{color:var(--gold-soft)}
+  .modal .thanks{text-align:center;padding:24px 0 8px}
+  .modal .thanks p{color:var(--muted);line-height:1.6;margin-top:10px}
 
   /* chapter nav */
   nav.dots{position:fixed;z-index:4;inset-inline-end:34px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px}
@@ -105,7 +121,8 @@
 
   @media (max-width:760px){
     header{padding:16px 18px} header img{height:28px} header .brand svg{height:38px} header .cta{padding:8px 14px;font-size:12px}
-    #details dl{grid-template-columns:1fr;gap:4px} #details dd{margin-bottom:10px}
+    .modal dl{grid-template-columns:1fr;gap:4px} .modal dd{margin-bottom:10px}
+    .modal form{grid-template-columns:1fr}
     .captions{inset-inline-start:18px;bottom:120px}
     nav.dots{inset-inline-end:14px} nav.dots span{display:none}
     .controls{bottom:22px;inset-inline-end:18px} .controls button{width:42px;height:42px}
@@ -146,14 +163,33 @@
 <div class="hero" id="hero"><h1>הפסגה</h1></div>
 <div class="captions" id="captions"></div>
 
-<div id="details" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+<div class="modal" id="details" role="dialog" aria-modal="true" aria-labelledby="dTitle">
   <div class="sheet">
-    <button class="close" id="dClose" title="סגירה"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <button class="close" title="סגירה"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="brand"><svg viewBox="0 0 60 122"><use href="#tower"/></svg><img src="logo.png" alt="הפסגה"></div>
     <h3 id="dTitle">פרטים על הפרויקט</h3>
     <p class="lead" id="dLead"></p>
     <dl id="dList"></dl>
     <div class="actions" id="dActions"></div>
+  </div>
+</div>
+
+<div class="modal" id="contact" role="dialog" aria-modal="true" aria-labelledby="cTitle">
+  <div class="sheet">
+    <button class="close" title="סגירה"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="brand"><svg viewBox="0 0 60 122"><use href="#tower"/></svg><img src="logo.png" alt="הפסגה"></div>
+    <h3 id="cTitle">לתיאום פגישה</h3>
+    <p class="lead">השאירו פרטים ונחזור אליכם בהקדם.</p>
+    <form id="cForm">
+      <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label>שם מלא<input name="שם" required autocomplete="name"></label>
+      <label>טלפון<input name="טלפון" type="tel" required autocomplete="tel" dir="ltr"></label>
+      <label>אימייל<input name="אימייל" type="email" autocomplete="email" dir="ltr"></label>
+      <label>מועד נוח לפגישה<input name="מועד נוח" placeholder="לדוגמה: יום ג׳ אחר הצהריים"></label>
+      <label class="full">הודעה<textarea name="הודעה" rows="3"></textarea></label>
+      <button class="send" type="submit">שליחה</button>
+      <p class="status" id="cStatus" role="status"></p>
+    </form>
   </div>
 </div>
 <nav class="dots" id="dots"></nav>
@@ -196,7 +232,7 @@ const PROJECT = {
   ],
   phone: "050-0000000",            // placeholder
   whatsapp: "972500000000",        // placeholder, international format without +
-  meeting: "pisga.marom@gmail.com"                    // "לתיאום פגישה" target: a booking page (https://calendly.com/...) or an email address; empty = scroll to the last section
+  email: "pisga.marom@gmail.com"   // the "לתיאום פגישה" contact form is sent here (through formsubmit.co)
 };
 
 /* ---------- index ---------- */
@@ -219,7 +255,7 @@ CHAPTERS.forEach((ch,i)=>{
     if(i===CHAPTERS.length-1){
       const m=document.createElement("button"); m.className="more";
       m.innerHTML=`לפרטים על הפרויקט <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>`;
-      m.onclick=openDetails; d.appendChild(m);
+      m.onclick=()=>openModal(detailsEl); d.appendChild(m);
     }
     capsEl.appendChild(d);
   }
@@ -236,10 +272,35 @@ PROJECT.facts.forEach(([k,v])=>{ const dt=document.createElement("dt"), dd=docum
 document.getElementById("dActions").innerHTML=
   `<a class="primary" href="tel:${PROJECT.phone.replace(/\D/g,"")}">התקשרו: <span dir="ltr">${PROJECT.phone}</span></a>`+
   `<a href="https://wa.me/${PROJECT.whatsapp}" target="_blank" rel="noopener">שלחו הודעה בוואטסאפ</a>`;
-function openDetails(){ stopPlay(); detailsEl.classList.add("open"); }
-function closeDetails(){ detailsEl.classList.remove("open"); }
-document.getElementById("dClose").onclick=closeDetails;
-detailsEl.onclick=e=>{ if(e.target===detailsEl) closeDetails(); };
+
+/* ---------- popups (details, contact) ---------- */
+function openModal(m){ stopPlay(); m.classList.add("open"); }
+function closeModal(m){ m.classList.remove("open"); }
+document.querySelectorAll(".modal").forEach(m=>{
+  m.querySelector(".close").onclick=()=>closeModal(m);
+  m.onclick=e=>{ if(e.target===m) closeModal(m); };
+});
+
+/* ---------- contact form: posted to PROJECT.email through formsubmit.co (no server needed) ---------- */
+const contactEl=document.getElementById("contact"), cForm=document.getElementById("cForm"), cStatus=document.getElementById("cStatus");
+cForm.onsubmit=async e=>{
+  e.preventDefault();
+  if(cForm._honey.value) return;                 // bots fill the hidden field
+  const data=Object.fromEntries(new FormData(cForm)); delete data._honey;
+  const send=cForm.querySelector(".send"); send.disabled=true; cStatus.textContent="שולח...";
+  try{
+    const r=await fetch(`https://formsubmit.co/ajax/${PROJECT.email}`,{
+      method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"},
+      body:JSON.stringify({...data, _subject:"פנייה חדשה לתיאום פגישה - הפסגה", _template:"table", ...(data["אימייל"]?{_replyto:data["אימייל"]}:{})})
+    });
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok || String(j.success)!=="true") throw new Error(j.message||r.status);
+    cForm.outerHTML=`<div class="thanks"><h3>תודה, ${data["שם"].replace(/[<>&]/g,"")}!</h3><p>הפרטים התקבלו. נחזור אליכם בהקדם לתיאום הפגישה.</p></div>`;
+  }catch(err){
+    send.disabled=false;
+    cStatus.innerHTML=`השליחה לא הצליחה. אפשר לנסות שוב או לכתוב לנו ישירות: <a href="mailto:${PROJECT.email}" dir="ltr">${PROJECT.email}</a>`;
+  }
+};
 
 const track=document.getElementById("track");
 function sizeTrack(){ track.style.height=(TOTAL*PX_PER_FRAME+innerHeight)+"px"; }
@@ -371,7 +432,8 @@ nextSec.onclick=()=>{
 addEventListener("wheel",()=>{ if(playing) stopPlay(); cancelAnimationFrame(anim); },{passive:true});
 addEventListener("touchstart",()=>{ if(playing) stopPlay(); cancelAnimationFrame(anim); },{passive:true});
 addEventListener("keydown",e=>{
-  if(detailsEl.classList.contains("open")){ if(e.key==="Escape") closeDetails(); return; }
+  const openM=document.querySelector(".modal.open");
+  if(openM){ if(e.key==="Escape") closeModal(openM); return; }
   if(e.key==="ArrowDown"||e.key==="PageDown"||e.key==="ArrowLeft"){e.preventDefault();nextChapter();}
   if(e.key==="ArrowUp"||e.key==="PageUp"||e.key==="ArrowRight"){e.preventDefault();prevChapter();}
   if(e.key===" "){e.preventDefault();nextSec.click();}
@@ -401,12 +463,7 @@ addEventListener("pagehide",()=>{ clearInterval(fadeT); bgm.pause(); });
 setMusicIcon();
 fetch("music.mp3",{method:"HEAD"}).then(r=>{ if(r.ok) musicBtn.hidden=false; }).catch(()=>{});
 
-const ctaTop=document.getElementById("ctaTop");
-if(PROJECT.meeting.includes("@")){
-  ctaTop.href=`mailto:${PROJECT.meeting}?subject=${encodeURIComponent("תיאום פגישה - הפסגה")}&body=${encodeURIComponent("שלום,\nאשמח לתאם פגישה לגבי פרויקט הפסגה.\n\nשם:\nטלפון:\nמועד נוח:\n")}`;
-} else if(PROJECT.meeting){
-  ctaTop.href=PROJECT.meeting; ctaTop.target="_blank"; ctaTop.rel="noopener";
-} else ctaTop.onclick=e=>{e.preventDefault(); goTo(CHAPTERS.length-1);};
+document.getElementById("ctaTop").onclick=e=>{ e.preventDefault(); openModal(contactEl); };
 onScroll();
 </script>
 </body>
