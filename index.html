@@ -100,6 +100,10 @@
   .controls button.on{border-color:var(--gold);color:var(--gold-soft)}
 
   /* progress */
+  .credit{position:fixed;z-index:4;bottom:14px;left:50%;transform:translate(-50%,6px);font-size:13px;letter-spacing:.06em;color:var(--muted);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .6s,transform .6s}
+  .credit.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+  .credit a{color:var(--gold-soft);text-decoration:none;border-bottom:1px solid rgba(217,191,148,.4);padding-bottom:1px;transition:.25s}
+  .credit a:hover{color:var(--text);border-color:var(--gold)}
   .progress{position:fixed;z-index:4;bottom:0;inset-inline:0;height:2px;background:rgba(255,255,255,.08)}
   .progress b{display:block;height:100%;width:0;background:var(--gold);transform-origin:right}
 
@@ -200,6 +204,7 @@
 <audio id="bgm" src="music.mp3" loop preload="none"></audio>
 
 <button class="nextsec" id="nextSec" title="לחלק הבא" aria-label="לחלק הבא"><b><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></b></button>
+<div class="credit" id="credit">עיצוב ובנייה: <a href="https://wa.me/972559653225" target="_blank" rel="noopener">הילה איבגי</a></div>
 <div class="progress"><b id="pbar"></b></div>
 
 <div id="track"></div>
@@ -389,6 +394,7 @@ function loop(){
   if(show!==activeCap){ caps.forEach((el,k)=>el.classList.toggle("on",k===show)); activeCap=show; }
   dots.forEach((d,k)=>d.classList.toggle("on",k===c));
   nextSec.classList.toggle("on", !playing && c<CHAPTERS.length-1);
+  creditEl.classList.toggle("on", c===CHAPTERS.length-1);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
@@ -423,6 +429,7 @@ function playStep(t){
   requestAnimationFrame(playStep);
 }
 const nextSec=document.getElementById("nextSec");
+const creditEl=document.getElementById("credit");
 nextSec.onclick=()=>{
   const c=curChapter(); if(c>=CHAPTERS.length-1) return;
   cancelAnimationFrame(anim);
