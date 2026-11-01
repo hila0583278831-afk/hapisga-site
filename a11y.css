@@ -1,0 +1,62 @@
+/* ============================================================
+   Accessibility widget (תוסף נגישות)
+   ============================================================ */
+.controls .a11y-btn{background:var(--gold);border-color:var(--gold);color:#111}
+.controls .a11y-btn:hover,.controls .a11y-btn[aria-expanded="true"]{background:var(--gold-soft);border-color:var(--gold-soft)}
+.controls .a11y-btn svg{width:26px;height:26px}
+
+.a11y-panel{position:fixed;z-index:9;bottom:96px;inset-inline-end:40px;width:min(360px,calc(100vw - 32px));max-height:calc(100vh - 120px);overflow-y:auto;overscroll-behavior:contain;background:rgba(17,20,24,.97);color:var(--text);border:1px solid rgba(217,191,148,.35);border-radius:18px;box-shadow:0 40px 90px -30px rgba(0,0,0,.8);padding:20px;font-family:"FbElitism",Arial,sans-serif;opacity:0;visibility:hidden;transform:scale(.96);transition:opacity .3s,transform .4s,visibility 0s .3s}
+.a11y-panel.is-open{opacity:1;visibility:visible;transform:none;transition:opacity .3s,transform .4s,visibility 0s}
+.a11y-panel__head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.a11y-panel__title{margin:0;font-weight:400;font-size:22px;line-height:1.2}
+.a11y-panel button{font-family:inherit}
+.a11y-close{width:40px;height:40px;border-radius:50%;border:1px solid rgba(243,238,230,.3);background:transparent;color:var(--text);cursor:pointer;font-size:22px;line-height:1}
+.a11y-close:hover{background:var(--gold-soft);color:#111;border-color:var(--gold-soft)}
+.a11y-size{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border:1px solid rgba(243,238,230,.16);border-radius:12px;margin-bottom:10px}
+.a11y-size span{font-size:16px}
+.a11y-size__ctrl{display:flex;align-items:center;gap:6px}
+.a11y-size output{min-width:46px;text-align:center;font-size:15px;color:var(--gold-soft)}
+.a11y-size button{width:42px;height:42px;border-radius:10px;border:1px solid rgba(243,238,230,.3);background:transparent;color:var(--text);font-size:20px;cursor:pointer}
+.a11y-size button:hover{background:var(--gold-soft);color:#111}
+.a11y-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.a11y-opt{min-height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:12px;border:1px solid rgba(243,238,230,.16);background:rgba(255,255,255,.03);color:var(--text);font-size:15px;line-height:1.25;text-align:center;cursor:pointer;transition:background .25s,border-color .25s,color .25s}
+.a11y-opt svg{width:24px;height:24px;flex:none}
+.a11y-opt:hover{border-color:var(--gold-soft)}
+.a11y-opt[aria-pressed="true"]{background:var(--gold-soft);border-color:var(--gold-soft);color:#111}
+.a11y-panel button:focus-visible,.a11y-panel a:focus-visible{outline:3px solid var(--gold-soft);outline-offset:2px}
+.a11y-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(243,238,230,.14)}
+.a11y-reset{min-height:42px;padding:0 16px;border-radius:999px;border:1px solid rgba(243,238,230,.3);background:transparent;color:var(--text);font-size:15px;cursor:pointer}
+.a11y-reset:hover{background:var(--text);color:#111}
+.a11y-foot a{color:var(--gold-soft);font-size:15px}
+.a11y-foot a:hover{color:#fff}
+@media (max-width:760px){
+  .a11y-panel{bottom:78px;inset-inline-end:16px}
+}
+
+/* ---------- settings applied to the page ---------- */
+/* text size: scale the text layers only; the full-screen canvas keeps its size */
+html[data-a11y-size="1"] :is(header,.captions,.hero,.modal .sheet,.credit,nav.dots){zoom:1.12}
+html[data-a11y-size="2"] :is(header,.captions,.hero,.modal .sheet,.credit,nav.dots){zoom:1.25}
+html[data-a11y-size="3"] :is(header,.captions,.hero,.modal .sheet,.credit,nav.dots){zoom:1.4}
+html[data-a11y-size="-1"] :is(header,.captions,.hero,.modal .sheet,.credit,nav.dots){zoom:.92}
+
+/* high contrast: darker overlay, full-strength text */
+html.a11y-contrast{--muted:#ffffff;--gold-soft:#f2d9a8}
+html.a11y-contrast .shade{background:rgba(0,0,0,.55)}
+html.a11y-contrast .cap h2,html.a11y-contrast .cap p,html.a11y-contrast .hero h1{text-shadow:0 2px 6px #000,0 0 18px #000}
+html.a11y-contrast .modal .sheet{background:#000;border-color:#f2d9a8}
+html.a11y-invert{filter:invert(1) hue-rotate(180deg)}
+html.a11y-invert img,html.a11y-invert canvas{filter:invert(1) hue-rotate(180deg)}
+html.a11y-gray{filter:grayscale(1)}
+
+html.a11y-links a{text-decoration:underline!important;text-underline-offset:3px;outline:2px solid #F2C14E!important;outline-offset:2px}
+html.a11y-links button:not(.a11y-opt):not(.a11y-close):not(.a11y-reset):not(.a11y-btn):not([data-size]){outline:2px solid #F2C14E!important;outline-offset:2px}
+
+html.a11y-font body,html.a11y-font body *:not(svg):not(svg *){font-family:Arial,sans-serif!important;letter-spacing:normal!important}
+html.a11y-spacing body *:not(svg):not(svg *){line-height:1.9!important;letter-spacing:.04em!important;word-spacing:.12em!important}
+html.a11y-spacing .hero h1,html.a11y-spacing .cap h2{line-height:1.2!important}
+
+html.a11y-cursor,html.a11y-cursor *{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M6 4l30 16-13 3 8 15-6 3-8-15-11 9z' fill='%23111' stroke='%23fff' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E") 6 4,auto!important}
+
+/* stop animations: no transitions, no looping motion; the page JS also jumps between sections instead of playing them */
+html.a11y-still *,html.a11y-still *::before,html.a11y-still *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}

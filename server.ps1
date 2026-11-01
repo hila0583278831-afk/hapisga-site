@@ -17,7 +17,9 @@ while ($listener.IsListening) {
     $rel = [Uri]::UnescapeDataString($ctx.Request.Url.AbsolutePath).TrimStart('/')
     if ($rel -eq '') { $rel = 'index.html' }
     $file = [IO.Path]::GetFullPath((Join-Path $root $rel))
-    if ($file.StartsWith($root) -and (Test-Path -LiteralPath $file -PathType Leaf)) {
+    # inside the site folder only, and never dot-files or .git
+    $rootSep = $root.TrimEnd('\') + '\'
+    if ($file.StartsWith($rootSep, [StringComparison]::OrdinalIgnoreCase) -and $rel -notmatch '(^|[\\/])\.' -and (Test-Path -LiteralPath $file -PathType Leaf)) {
       $bytes = [IO.File]::ReadAllBytes($file)
       $ext = [IO.Path]::GetExtension($file).ToLower()
       if ($mime.ContainsKey($ext)) { $res.ContentType = $mime[$ext] } else { $res.ContentType = 'application/octet-stream' }
