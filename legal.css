@@ -29,3 +29,5 @@ kbd{font-family:inherit;border:1px solid rgba(243,238,230,.4);border-radius:6px;
 footer{border-top:1px solid rgba(217,191,148,.2);padding:22px 0 30px;font-size:14px;color:var(--muted)}
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:space-between}
 footer nav{display:flex;gap:18px}
+footer a.hila{display:inline-flex;align-items:center;gap:8px;vertical-align:middle}
+footer a.hila img{height:20px;width:auto;display:block}

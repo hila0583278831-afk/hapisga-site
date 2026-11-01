@@ -129,6 +129,10 @@
   .credit{position:fixed;z-index:4;bottom:14px;left:50%;transform:translate(-50%,6px);font-size:13px;letter-spacing:.06em;color:var(--muted);white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .6s,transform .6s,visibility 0s .6s}
   .credit.on{opacity:1;visibility:visible;transform:translate(-50%,0);pointer-events:auto;transition:opacity .6s,transform .6s}
   .credit .sep{margin:0 10px;opacity:.5}
+  .credit{display:flex;align-items:center}
+  .credit .by{display:inline-flex;align-items:center}
+  .credit a.hila{display:inline-flex;align-items:center;gap:8px;margin-inline-start:6px}
+  .credit a.hila img{height:18px;width:auto;display:block}
   .credit a{color:var(--gold-soft);text-decoration:none;border-bottom:1px solid rgba(217,191,148,.4);padding-bottom:1px;transition:.25s}
   .credit a:hover{color:var(--text);border-color:var(--gold)}
   .progress{position:fixed;z-index:4;bottom:0;inset-inline:0;height:2px;background:rgba(255,255,255,.08)}
@@ -172,8 +176,12 @@
     .captions{inset-inline-start:18px;bottom:120px}
     nav.dots{inset-inline-end:8px;gap:4px} nav.dots span{display:none} nav.dots button{min-width:32px;min-height:32px}
     .controls{bottom:22px;inset-inline-end:18px} .controls button{width:44px;height:44px}
-    .credit{font-size:11px;bottom:4px}
+    /* two lines at the bottom right; the next-section arrow there is hidden in the last section */
+    .credit{font-size:12px;bottom:76px;left:auto;right:16px;transform:translateY(6px);flex-direction:column;align-items:flex-end;gap:6px}
+    .credit.on{transform:none}
+    .credit .sep.mid{display:none}
     .credit .sep{margin:0 6px}
+    .credit a.hila img{height:15px}
     .nextsec{inset-inline-start:18px;bottom:46px}
   }
 </style>
@@ -263,7 +271,7 @@
 <audio id="bgm" src="music.mp3" loop preload="none"></audio>
 
 <button type="button" class="nextsec" id="nextSec" aria-label="לחלק הבא"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></b></button>
-<footer class="credit" id="credit"><a href="accessibility.html">הצהרת נגישות</a><span class="sep" aria-hidden="true">|</span><a href="privacy.html">מדיניות פרטיות</a><span class="sep" aria-hidden="true">|</span>עיצוב ובנייה: <a href="https://wa.me/972559653225" target="_blank" rel="noopener noreferrer" aria-label="הילה איבגי (וואטסאפ, נפתח בחלון חדש)">הילה איבגי</a></footer>
+<footer class="credit" id="credit"><span><a href="accessibility.html">הצהרת נגישות</a><span class="sep" aria-hidden="true">|</span><a href="privacy.html">מדיניות פרטיות</a></span><span class="sep mid" aria-hidden="true">|</span><span class="by">עיצוב ובנייה: <a href="https://wa.me/972559653225" target="_blank" rel="noopener noreferrer" aria-label="הילה איבגי (וואטסאפ, נפתח בחלון חדש)" class="hila">הילה איבגי<img src="hila-logo.png" alt="" width="560" height="120"></a></span></footer>
 <div class="progress"><b id="pbar"></b></div>
 
 <div id="track"></div>
